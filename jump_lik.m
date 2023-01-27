@@ -22,16 +22,15 @@ dz_numerical = 0.001; %numerical spatial step -- This controls accuracy.
 
 % -- consequential parameters
 
-D = kBT/xi;
-v = UTZ/(width_TZ*xi_TZ);
+D = kBT/xi; % diffusion coefficient in bulk
+v = UTZ/(width_TZ*xi_TZ); % magnitude of velocity (not its sign/direction) in TZ
 
-D_TZ = kBT/xi_TZ;
-
+D_TZ = kBT/xi_TZ; % diffusion coefficient in TZ
 
 dt_numerical_estimate = min( [dz_numerical^2/D, dz_numerical/v] );
-dt_numerical = 16*dt_numerical_estimate;
+dt_numerical = 16*dt_numerical_estimate; % this can be quite large since we're using Backward Euler
 
-if (verbose)
+if (verbose) % tests
     Peclet = (v*dz_numerical)/D;
     DZR = v*sqrt(dt_numerical/2*D);
     
@@ -85,16 +84,17 @@ end
 
 Back_matrix = inv(eye(nz) - (D_matrix + v_matrix)*dt_numerical);
 
+% SOLUTION METHOD
+% we wish to solve dpdt=Ap for IC delta functions (p0=1/dz_numerical at one bin and zero elsewhere).
+% Backward Euler method: p(t+1) = A p(t+1) dt + p(t) so p(t+1)=inv(I-A*dt)p(t), and p(t)= (inv(I-A*dt))^nt p0
+
 % direct power
 
 tic;
 pz_final = mpower(Back_matrix,ntmax);
 toc;
 
-
-%sum(pz_final*dz_numerical)
-
-% Solver loop
+% Solver loop - I tried this and it was slower....
 if 0
     tic;
     pz_final = Back_matrix;
@@ -104,7 +104,8 @@ if 0
     toc;
 end
 
-pz_final= pz_final/dz_numerical;
+pz_final= pz_final/dz_numerical; % impose delta function initial conditions.
+% the columns represent different ICs
 
 if verbose
     % check for unity
@@ -114,8 +115,6 @@ if verbose
 end
 
 %% analyze
-
-
 
 figure(1); clf; hold on; box on;
 
