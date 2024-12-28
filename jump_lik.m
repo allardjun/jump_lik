@@ -11,7 +11,7 @@ z_max = 2; % domain size
 
 xi = 1; % viscosity, pNs/um
 kBT = 4.2e-3; % pNum
-UTZ = 1e-1; % height of triangle energy barrier
+UTZ = 0*1e-1; % height of triangle energy barrier
 z_TZ = 0.5; % center of tz
 width_TZ = 0.1; % width of tz
 
